@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Justin Harris | Software Developer</title>
+    <meta name="description"
+        content="Justin Harris - Software Developer Portfolio. Explore my projects, skills, and get in touch.">
+    <link rel="stylesheet" href="styles.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Animated Background -->
+    <div class="bg-grid"></div>
+    <div class="particles" id="particles"></div>
+    <div class="glow-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="brand-bracket">&lt;</span>
+            <span class="brand-name">JH</span>
+            <span class="brand-bracket">/&gt;</span>
+        </div>
+        <div class="nav-links">
+            <a href="#home" class="nav-link active">Home</a>
+            <a href="#about" class="nav-link">About</a>
+            <a href="#projects" class="nav-link">Projects</a>
+            <a href="#skills" class="nav-link">Skills</a>
+            <a href="#contact" class="nav-link">Contact</a>
+        </div>
+        <div class="nav-toggle" id="navToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <span class="terminal-btn red"></span>
+                    <span class="terminal-btn yellow"></span>
+                    <span class="terminal-btn green"></span>
+                    <span class="terminal-title">justin@portfolio:~</span>
+                </div>
+                <div class="terminal-body">
+                    <p class="terminal-line"><span class="prompt">$</span> <span class="command typing"
+                            id="typingText"></span><span class="cursor">|</span></p>
+                </div>
+            </div>
+            <h1 class="hero-title">
+                <span class="greeting">Hello, I'm</span>
+                <span class="name glitch" data-text="Justin Harris">Justin Harris</span>
+            </h1>
+            <p class="hero-subtitle">
+                <span class="role-wrapper">
+                    <span class="role" id="roleText">Software Developer</span>
+                </span>
+            </p>
+            <div class="hero-cta">
+                <a href="#projects" class="btn btn-primary">
+                    <span class="btn-text">View Projects</span>
+                    <span class="btn-icon">→</span>
+                    <div class="btn-glow"></div>
+                </a>
+                <a href="#contact" class="btn btn-secondary">
+                    <span class="btn-text">Get In Touch</span>
+                    <div class="btn-border"></div>
+                </a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="code-sphere">
+                <div class="sphere-ring ring-1"></div>
+                <div class="sphere-ring ring-2"></div>
+                <div class="sphere-ring ring-3"></div>
+                <div class="sphere-core"></div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <div class="mouse">
+                <div class="wheel"></div>
+            </div>
+            <span>Scroll Down</span>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about section">
+        <div class="section-header">
+            <span class="section-number">01</span>
+            <h2 class="section-title">About Me</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="about-content">
+            <div class="about-image">
+                <div class="image-frame">
+                    <div class="frame-corner tl"></div>
+                    <div class="frame-corner tr"></div>
+                    <div class="frame-corner bl"></div>
+                    <div class="frame-corner br"></div>
+                    <div class="image-placeholder">
+                        <span class="avatar-icon">👨‍💻</span>
+                    </div>
+                    <div class="image-scanline"></div>
+                </div>
+            </div>
+            <div class="about-text">
+                <div class="about-card">
+                    <p class="about-intro">
+                        I'm a passionate <span class="highlight">Software Developer</span> who loves turning complex
+                        problems into elegant, efficient solutions.
+                    </p>
+                    <p class="about-description">
+                        With a keen eye for detail and a drive for continuous learning, I specialize in building modern
+                        applications that are both powerful and user-friendly. Whether it's crafting responsive web
+                        experiences, developing robust backend systems, or exploring cutting-edge technologies, I'm
+                        always ready for the next challenge.
+                    </p>
+                    <div class="about-stats">
+                        <div class="stat-item">
+                            <span class="stat-number" data-count="5">0</span>
+                            <span class="stat-label">Projects</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" data-count="10">0</span>
+                            <span class="stat-label">Technologies</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" data-count="4">0</span>
+                            <span class="stat-label">Years of Experience</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="projects section">
+        <div class="section-header">
+            <span class="section-number">02</span>
+            <h2 class="section-title">Featured Projects</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="projects-grid">
+            <!-- Project 1 -->
+            <article class="project-card" data-tilt>
+                <div class="project-image">
+                    <div class="project-placeholder">
+                        <span class="project-icon">🎮</span>
+                    </div>
+                    <div class="project-overlay">
+                        <div class="overlay-content">
+                            <a href="#" class="project-link" aria-label="View Live Demo">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                    <polyline points="15 3 21 3 21 9"></polyline>
+                                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                                </svg>
+                            </a>
+                            <a href="#" class="project-link" aria-label="View Source Code">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path
+                                        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+                                    </path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="project-status">
+                        <span class="status-dot"></span>
+                        <span>Featured</span>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <h3 class="project-title">Project One</h3>
+                    <p class="project-description">
+                        An amazing project that showcases innovative features and cutting-edge technology. Built with
+                        passion and precision.
+                    </p>
+                    <div class="project-tech">
+                        <span class="tech-tag">React</span>
+                        <span class="tech-tag">Node.js</span>
+                        <span class="tech-tag">MongoDB</span>
+                    </div>
+                </div>
+                <div class="card-glow"></div>
+            </article>
+
+            <!-- Project 2 -->
+            <article class="project-card" data-tilt>
+                <div class="project-image">
+                    <div class="project-placeholder">
+                        <span class="project-icon">🚀</span>
+                    </div>
+                    <div class="project-overlay">
+                        <div class="overlay-content">
+                            <a href="#" class="project-link" aria-label="View Live Demo">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                    <polyline points="15 3 21 3 21 9"></polyline>
+                                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                                </svg>
+                            </a>
+                            <a href="#" class="project-link" aria-label="View Source Code">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path
+                                        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+                                    </path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="project-status">
+                        <span class="status-dot"></span>
+                        <span>In Progress</span>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <h3 class="project-title">Project Two</h3>
+                    <p class="project-description">
+                        A powerful application designed to solve real-world problems with elegant solutions and
+                        intuitive user experience.
+                    </p>
+                    <div class="project-tech">
+                        <span class="tech-tag">Python</span>
+                        <span class="tech-tag">FastAPI</span>
+                        <span class="tech-tag">PostgreSQL</span>
+                    </div>
+                </div>
+                <div class="card-glow"></div>
+            </article>
+
+            <!-- Project 3 -->
+            <article class="project-card" data-tilt>
+                <div class="project-image">
+                    <div class="project-placeholder">
+                        <span class="project-icon">⚡</span>
+                    </div>
+                    <div class="project-overlay">
+                        <div class="overlay-content">
+                            <a href="#" class="project-link" aria-label="View Live Demo">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                    <polyline points="15 3 21 3 21 9"></polyline>
+                                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                                </svg>
+                            </a>
+                            <a href="#" class="project-link" aria-label="View Source Code">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path
+                                        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+                                    </path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="project-status">
+                        <span class="status-dot"></span>
+                        <span>Completed</span>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <h3 class="project-title">Project Three</h3>
+                    <p class="project-description">
+                        Lightning-fast performance meets beautiful design. This project pushes the boundaries of what's
+                        possible.
+                    </p>
+                    <div class="project-tech">
+                        <span class="tech-tag">TypeScript</span>
+                        <span class="tech-tag">Next.js</span>
+                        <span class="tech-tag">Prisma</span>
+                    </div>
+                </div>
+                <div class="card-glow"></div>
+            </article>
+
+            <!-- Project 4 -->
+            <article class="project-card" data-tilt>
+                <div class="project-image">
+                    <div class="project-placeholder">
+                        <span class="project-icon">🤖</span>
+                    </div>
+                    <div class="project-overlay">
+                        <div class="overlay-content">
+                            <a href="#" class="project-link" aria-label="View Live Demo">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                    <polyline points="15 3 21 3 21 9"></polyline>
+                                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                                </svg>
+                            </a>
+                            <a href="#" class="project-link" aria-label="View Source Code">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path
+                                        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+                                    </path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="project-status">
+                        <span class="status-dot"></span>
+                        <span>Experimental</span>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <h3 class="project-title">Project Four</h3>
+                    <p class="project-description">
+                        Exploring the frontiers of AI and machine learning. An experimental project that learns and
+                        adapts.
+                    </p>
+                    <div class="project-tech">
+                        <span class="tech-tag">Python</span>
+                        <span class="tech-tag">TensorFlow</span>
+                        <span class="tech-tag">Docker</span>
+                    </div>
+                </div>
+                <div class="card-glow"></div>
+            </article>
+
+            <!-- Project 5 -->
+            <article class="project-card" data-tilt>
+                <div class="project-image">
+                    <div class="project-placeholder">
+                        <span class="project-icon">🌐</span>
+                    </div>
+                    <div class="project-overlay">
+                        <div class="overlay-content">
+                            <a href="#" class="project-link" aria-label="View Live Demo">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                    <polyline points="15 3 21 3 21 9"></polyline>
+                                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                                </svg>
+                            </a>
+                            <a href="#" class="project-link" aria-label="View Source Code">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path
+                                        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+                                    </path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="project-status">
+                        <span class="status-dot"></span>
+                        <span>Live</span>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <h3 class="project-title">Project Five</h3>
+                    <p class="project-description">
+                        A full-stack web application that connects people and ideas. Built for scale, designed for
+                        humans.
+                    </p>
+                    <div class="project-tech">
+                        <span class="tech-tag">Vue.js</span>
+                        <span class="tech-tag">GraphQL</span>
+                        <span class="tech-tag">AWS</span>
+                    </div>
+                </div>
+                <div class="card-glow"></div>
+            </article>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="skills section">
+        <div class="section-header">
+            <span class="section-number">03</span>
+            <h2 class="section-title">Tech Stack</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="skills-container">
+            <div class="skill-category">
+                <h3 class="category-title">
+                    <span class="category-icon">🖥️</span>
+                    Languages
+                </h3>
+                <div class="skills-grid">
+                    <div class="skill-item">
+                        <div class="skill-icon-wrapper">
+                            <span class="skill-icon">⚡</span>
+                        </div>
+                        <span class="skill-name">C++</span>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-progress="88"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-icon-wrapper">
+                            <span class="skill-icon">🔧</span>
+                        </div>
+                        <span class="skill-name">C</span>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-progress="85"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-icon-wrapper">
+                            <span class="skill-icon">💜</span>
+                        </div>
+                        <span class="skill-name">C#</span>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-progress="82"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-icon-wrapper">
+                            <span class="skill-icon">🍎</span>
+                        </div>
+                        <span class="skill-name">Swift</span>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-progress="78"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-icon-wrapper">
+                            <span class="skill-icon">🐍</span>
+                        </div>
+                        <span class="skill-name">Python</span>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-progress="82"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-icon-wrapper">
+                            <span class="skill-icon">☕</span>
+                        </div>
+                        <span class="skill-name">Java</span>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-progress="80"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="skill-category">
+                <h3 class="category-title">
+                    <span class="category-icon">🌐</span>
+                    Web Development
+                </h3>
+                <div class="skills-grid">
+                    <div class="skill-item">
+                        <div class="skill-icon-wrapper">
+                            <span class="skill-icon">📄</span>
+                        </div>
+                        <span class="skill-name">HTML/CSS</span>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-progress="95"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-icon-wrapper">
+                            <span class="skill-icon">🟢</span>
+                        </div>
+                        <span class="skill-name">Node.js</span>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-progress="88"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-icon-wrapper">
+                            <span class="skill-icon">⚛️</span>
+                        </div>
+                        <span class="skill-name">React</span>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-progress="90"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-icon-wrapper">
+                            <span class="skill-icon">📘</span>
+                        </div>
+                        <span class="skill-name">TypeScript</span>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-progress="85"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="skill-category">
+                <h3 class="category-title">
+                    <span class="category-icon">🛠️</span>
+                    Tools & DevOps
+                </h3>
+                <div class="skills-grid">
+                    <div class="skill-item">
+                        <div class="skill-icon-wrapper">
+                            <span class="skill-icon">🐙</span>
+                        </div>
+                        <span class="skill-name">Git</span>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-progress="92"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-icon-wrapper">
+                            <span class="skill-icon">🐳</span>
+                        </div>
+                        <span class="skill-name">Docker</span>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-progress="75"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-icon-wrapper">
+                            <span class="skill-icon">☁️</span>
+                        </div>
+                        <span class="skill-name">Cloud</span>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-progress="78"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact section">
+        <div class="section-header">
+            <span class="section-number">04</span>
+            <h2 class="section-title">Get In Touch</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="contact-container">
+            <div class="contact-info">
+                <h3 class="contact-heading">Let's Build Something Amazing</h3>
+                <p class="contact-text">
+                    I'm always open to discussing new projects, creative ideas, or opportunities to be part of your
+                    vision. Feel free to reach out!
+                </p>
+                <div class="contact-links">
+                    <a href="mailto:your.email@example.com" class="contact-link">
+                        <div class="link-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                </path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                        </div>
+                        <div class="link-content">
+                            <span class="link-label">Email</span>
+                            <span class="link-value">your.email@example.com</span>
+                        </div>
+                        <div class="link-arrow">→</div>
+                    </a>
+                    <a href="https://github.com/yourusername" target="_blank" rel="noopener" class="contact-link">
+                        <div class="link-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path
+                                    d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+                                </path>
+                            </svg>
+                        </div>
+                        <div class="link-content">
+                            <span class="link-label">GitHub</span>
+                            <span class="link-value">github.com/yourusername</span>
+                        </div>
+                        <div class="link-arrow">→</div>
+                    </a>
+                    <a href="https://linkedin.com/in/yourusername" target="_blank" rel="noopener" class="contact-link">
+                        <div class="link-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path
+                                    d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z">
+                                </path>
+                                <rect x="2" y="9" width="4" height="12"></rect>
+                                <circle cx="4" cy="4" r="2"></circle>
+                            </svg>
+                        </div>
+                        <div class="link-content">
+                            <span class="link-label">LinkedIn</span>
+                            <span class="link-value">linkedin.com/in/yourusername</span>
+                        </div>
+                        <div class="link-arrow">→</div>
+                    </a>
+                    <a href="https://twitter.com/yourusername" target="_blank" rel="noopener" class="contact-link">
+                        <div class="link-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path
+                                    d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z">
+                                </path>
+                            </svg>
+                        </div>
+                        <div class="link-content">
+                            <span class="link-label">Twitter</span>
+                            <span class="link-value">@yourusername</span>
+                        </div>
+                        <div class="link-arrow">→</div>
+                    </a>
+                </div>
+            </div>
+            <div class="contact-form-container">
+                <form class="contact-form" id="contactForm">
+                    <div class="form-group">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" id="name" name="name" class="form-input" placeholder="Your name" required>
+                        <div class="input-highlight"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" id="email" name="email" class="form-input"
+                            placeholder="your.email@example.com" required>
+                        <div class="input-highlight"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="message" class="form-label">Message</label>
+                        <textarea id="message" name="message" class="form-input form-textarea"
+                            placeholder="Your message..." rows="5" required></textarea>
+                        <div class="input-highlight"></div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-submit">
+                        <span class="btn-text">Send Message</span>
+                        <span class="btn-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                            </svg>
+                        </span>
+                        <div class="btn-glow"></div>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <span class="brand-bracket">&lt;</span>
+                <span class="brand-name">Justin Harris</span>
+                <span class="brand-bracket">/&gt;</span>
+            </div>
+            <p class="footer-text">Crafted with passion and code</p>
+            <div class="footer-links">
+                <a href="#home">Home</a>
+                <a href="#about">About</a>
+                <a href="#projects">Projects</a>
+                <a href="#contact">Contact</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Justin Harris. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
