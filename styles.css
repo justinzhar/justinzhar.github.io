@@ -1610,6 +1610,49 @@ img {
     .contact-form-container {
         padding: 25px;
     }
+
+    .contact-links {
+        width: 100%;
+    }
+
+    .contact-link {
+        padding: 20px 15px;
+        margin: 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .contact-link:hover {
+        transform: none;
+    }
+
+    .link-icon {
+        width: 50px;
+        height: 50px;
+        flex-shrink: 0;
+    }
+
+    .link-icon svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .link-value {
+        font-size: 0.95rem;
+        word-break: break-word;
+    }
+
+    .link-arrow {
+        display: none;
+    }
+
+    .contact-info {
+        text-align: center;
+    }
+
+    .contact-heading {
+        font-size: 1.5rem;
+    }
 }
 
 /* ============================================
