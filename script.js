@@ -624,60 +624,65 @@ document.querySelectorAll('.btn').forEach(button => {
 });
 
 // ============================================
-// MOUSE TRAILER EFFECT
+// MOUSE TRAILER EFFECT (Desktop Only)
 // ============================================
-const trailer = document.createElement('div');
-trailer.className = 'mouse-trailer';
-trailer.style.cssText = `
-    position: fixed;
-    width: 20px;
-    height: 20px;
-    border: 2px solid var(--accent-primary);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9999;
-    transition: transform 0.1s ease, opacity 0.3s ease;
-    opacity: 0;
-`;
-document.body.appendChild(trailer);
+// Only show custom cursor on non-touch devices
+const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 
-let mouseX = 0, mouseY = 0;
-let trailerX = 0, trailerY = 0;
+if (!isTouchDevice) {
+    const trailer = document.createElement('div');
+    trailer.className = 'mouse-trailer';
+    trailer.style.cssText = `
+        position: fixed;
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--accent-primary);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        transition: transform 0.1s ease, opacity 0.3s ease;
+        opacity: 0;
+    `;
+    document.body.appendChild(trailer);
 
-document.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    trailer.style.opacity = '1';
-});
+    let mouseX = 0, mouseY = 0;
+    let trailerX = 0, trailerY = 0;
 
-document.addEventListener('mouseleave', () => {
-    trailer.style.opacity = '0';
-});
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        trailer.style.opacity = '1';
+    });
 
-function animateTrailer() {
-    trailerX += (mouseX - trailerX) * 0.15;
-    trailerY += (mouseY - trailerY) * 0.15;
+    document.addEventListener('mouseleave', () => {
+        trailer.style.opacity = '0';
+    });
 
-    trailer.style.left = `${trailerX - 10}px`;
-    trailer.style.top = `${trailerY - 10}px`;
+    function animateTrailer() {
+        trailerX += (mouseX - trailerX) * 0.15;
+        trailerY += (mouseY - trailerY) * 0.15;
 
-    requestAnimationFrame(animateTrailer);
+        trailer.style.left = `${trailerX - 10}px`;
+        trailer.style.top = `${trailerY - 10}px`;
+
+        requestAnimationFrame(animateTrailer);
+    }
+
+    animateTrailer();
+
+    // Expand trailer on hoverable elements
+    document.querySelectorAll('a, button, .project-card').forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            trailer.style.transform = 'scale(2)';
+            trailer.style.borderColor = 'var(--accent-tertiary)';
+        });
+
+        el.addEventListener('mouseleave', () => {
+            trailer.style.transform = 'scale(1)';
+            trailer.style.borderColor = 'var(--accent-primary)';
+        });
+    });
 }
-
-animateTrailer();
-
-// Expand trailer on hoverable elements
-document.querySelectorAll('a, button, .project-card').forEach(el => {
-    el.addEventListener('mouseenter', () => {
-        trailer.style.transform = 'scale(2)';
-        trailer.style.borderColor = 'var(--accent-tertiary)';
-    });
-
-    el.addEventListener('mouseleave', () => {
-        trailer.style.transform = 'scale(1)';
-        trailer.style.borderColor = 'var(--accent-primary)';
-    });
-});
 
 // ============================================
 // PARALLAX EFFECT FOR ORBS
