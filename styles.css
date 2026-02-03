@@ -237,7 +237,7 @@ img {
     backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border-color);
     z-index: var(--z-nav);
-    transition: var(--transition-normal);
+    transition: var(--transition-normal), opacity 0.4s ease;
 }
 
 .navbar.scrolled {
@@ -335,6 +335,7 @@ img {
 .hero-content {
     max-width: 600px;
     z-index: var(--z-default);
+    transition: opacity 0.4s ease;
 }
 
 .terminal-window {
@@ -556,17 +557,103 @@ img {
 /* Hero Visual */
 .hero-visual {
     position: relative;
-    width: 400px;
-    height: 400px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 440px;
+    height: 440px;
+    display: grid;
+    place-items: center;
+    isolation: isolate;
+}
+
+.solar-stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(circle at 50% 50%,
+            rgba(255, 202, 87, 0.2) 0%,
+            rgba(255, 159, 67, 0.15) 35%,
+            rgba(15, 10, 10, 0) 70%);
+    box-shadow:
+        0 0 60px rgba(255, 159, 67, 0.25),
+        0 0 120px rgba(255, 107, 107, 0.15);
+    cursor: pointer;
+    transition: all 0.5s ease;
+}
+
+.solar-stage::before {
+    content: '';
+    position: absolute;
+    inset: -12%;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+            rgba(255, 202, 87, 0.15) 0%,
+            rgba(255, 159, 67, 0.08) 45%,
+            rgba(15, 10, 10, 0) 70%);
+    filter: blur(10px);
+    pointer-events: none;
+    z-index: 0;
+    transition: opacity 0.5s ease;
+}
+
+.solar-stage.expanded::before {
+    opacity: 0;
+}
+
+#solarCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: 50%;
+    transition: border-radius 0.5s ease;
+}
+
+.solar-hud {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.hud-title {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.hud-subtitle {
+    display: block;
+    margin-top: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent-primary);
 }
 
 .code-sphere {
     position: relative;
     width: 300px;
     height: 300px;
+}
+
+.fallback-sun {
+    display: none;
+}
+
+html.no-webgl .solar-stage {
+    display: none;
+}
+
+html.no-webgl .fallback-sun {
+    display: block;
 }
 
 .sphere-ring {
@@ -1493,8 +1580,8 @@ img {
     }
 
     .hero-visual {
-        width: 300px;
-        height: 300px;
+        width: 340px;
+        height: 340px;
     }
 
     .about-content {
@@ -1569,6 +1656,11 @@ img {
 
     .name {
         font-size: 2.5rem;
+    }
+
+    .hero-visual {
+        width: 300px;
+        height: 300px;
     }
 
     .projects-grid {

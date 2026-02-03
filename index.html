@@ -81,7 +81,14 @@
             </div>
         </div>
         <div class="hero-visual">
-            <div class="code-sphere">
+            <div class="solar-stage">
+                <canvas id="solarCanvas" role="img" aria-label="3D solar forge animation"></canvas>
+                <div class="solar-hud">
+                    <span class="hud-title">Solar Forge</span>
+                    <span class="hud-subtitle">Realtime 3D Sun</span>
+                </div>
+            </div>
+            <div class="code-sphere fallback-sun" aria-hidden="true">
                 <div class="sphere-ring ring-1"></div>
                 <div class="sphere-ring ring-2"></div>
                 <div class="sphere-ring ring-3"></div>
@@ -621,6 +628,8 @@
         </div>
     </footer>
 
+    <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+    <script src="solar-forge.js"></script>
     <script src="script.js"></script>
 </body>
 
