@@ -209,7 +209,7 @@
         // Lock body scroll while expanded
         document.body.style.overflow = 'hidden';
 
-        // Create fullscreen container that holds BOTH canvas and hero content
+        // Create fullscreen container - transparent, behind page content
         expandedContainer = document.createElement('div');
         expandedContainer.id = 'solar-expanded';
         expandedContainer.style.cssText = `
@@ -218,9 +218,10 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            z-index: 9999;
-            background: #0a0808;
+            z-index: 0;
+            background: transparent;
             overflow: hidden;
+            pointer-events: none;
         `;
 
         // Move canvas into expanded container
@@ -232,49 +233,31 @@
         canvas.style.height = '100%';
         canvas.style.zIndex = '1';
         canvas.style.borderRadius = '0';
+        canvas.style.pointerEvents = 'auto';
 
-        // Clone hero content - positioned relative to sun
-        if (heroContent) {
-            // Calculate hero position based on sun's screen position
-            // Sun is at sunScreenPos (normalized -1 to 1), hero goes to the left of it
-            const sunScreenX = (sunScreenPos.x + 1) / 2 * 100; // Convert to percentage
-            const sunScreenY = (1 - sunScreenPos.y) / 2 * 100; // Convert to percentage (flip Y)
+        // Add expanded container to body (at the beginning so it's behind content)
+        document.body.insertBefore(expandedContainer, document.body.firstChild);
 
-            // Position hero to the left of the sun
-            const heroLeft = Math.max(5, sunScreenX - 45); // 45% to the left of sun, min 5%
-            const heroTop = sunScreenY; // Same vertical position as sun
-
-            const heroWrapper = document.createElement('div');
-            heroWrapper.id = 'expanded-hero-wrapper';
-            heroWrapper.style.cssText = `
-                position: absolute;
-                top: ${heroTop}%;
-                left: ${heroLeft}%;
-                transform: translateY(-50%);
-                z-index: 10;
-                pointer-events: auto;
-                max-width: 500px;
-            `;
-            const heroClone = heroContent.cloneNode(true);
-            heroWrapper.appendChild(heroClone);
-            expandedContainer.appendChild(heroWrapper);
+        // Make the hero section have a higher z-index so it stays on top
+        if (heroSection) {
+            heroSection.style.position = 'relative';
+            heroSection.style.zIndex = '100';
+            heroSection.style.background = 'transparent';
         }
 
-        // Add style to disable ALL transitions
-        const noTransitionStyle = document.createElement('style');
-        noTransitionStyle.textContent = `
-            #expanded-hero-wrapper,
-            #expanded-hero-wrapper * {
-                transition: none !important;
-                animation: none !important;
-                opacity: 1 !important;
-                visibility: visible !important;
-            }
+        // Add a dark background layer behind everything
+        const bgLayer = document.createElement('div');
+        bgLayer.id = 'solar-bg-layer';
+        bgLayer.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #0a0808;
+            z-index: -1;
         `;
-        expandedContainer.appendChild(noTransitionStyle);
-
-        // Add expanded container to body
-        document.body.appendChild(expandedContainer);
+        document.body.insertBefore(bgLayer, document.body.firstChild);
 
         // Calculate the sun's center position on screen using the actual rendered position
         // sunScreenPos is in normalized coordinates (-1 to 1), convert to screen pixels
@@ -318,10 +301,7 @@
             collapseExpanded();
         });
 
-        // Hide the original hero section so it doesn't show through
-        if (heroSection) {
-            heroSection.style.visibility = 'hidden';
-        }
+        // Keep hero section visible - it's on top of the canvas now
 
         // Make renderer background visible (dark)
         renderer.setClearColor(0x0a0808, 1);
@@ -359,6 +339,12 @@
             expandedContainer = null;
         }
 
+        // Remove background layer
+        const bgLayer = document.getElementById('solar-bg-layer');
+        if (bgLayer && bgLayer.parentNode) {
+            bgLayer.parentNode.removeChild(bgLayer);
+        }
+
         // Restore canvas styles
         canvas.style.position = '';
         canvas.style.top = '';
@@ -369,9 +355,12 @@
         canvas.style.pointerEvents = '';
         canvas.style.borderRadius = '50%';
 
-        // Restore hero section visibility
+        // Restore hero section visibility and styles
         if (heroSection) {
             heroSection.style.visibility = '';
+            heroSection.style.position = '';
+            heroSection.style.zIndex = '';
+            heroSection.style.background = '';
         }
 
         // Restore transparent renderer
