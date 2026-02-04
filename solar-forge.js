@@ -206,12 +206,19 @@
         hoverTarget = 1;
         calculateSunOffset();
 
-        // Lock body scroll while expanded
-        document.body.style.overflow = 'hidden';
+        // Track scroll to update sun position
+        const handleScroll = () => {
+            calculateSunOffset();
+        };
+        window.addEventListener('scroll', handleScroll);
 
         // Create fullscreen container - transparent, behind page content
         expandedContainer = document.createElement('div');
         expandedContainer.id = 'solar-expanded';
+
+        // Store scroll handler for cleanup
+        expandedContainer._scrollHandler = handleScroll;
+
         expandedContainer.style.cssText = `
             position: fixed;
             top: 0;
@@ -245,7 +252,7 @@
             heroSection.style.background = 'transparent';
         }
 
-        // Add a dark background layer behind everything
+        // Add a dark background layer behind everything with fade-in
         const bgLayer = document.createElement('div');
         bgLayer.id = 'solar-bg-layer';
         bgLayer.style.cssText = `
@@ -256,8 +263,14 @@
             height: 100vh;
             background: #0a0808;
             z-index: -1;
+            opacity: 0;
+            transition: opacity 0.5s ease-out;
         `;
         document.body.insertBefore(bgLayer, document.body.firstChild);
+        // Trigger fade-in after a frame
+        requestAnimationFrame(() => {
+            bgLayer.style.opacity = '1';
+        });
 
         // Calculate the sun's center position on screen using the actual rendered position
         // sunScreenPos is in normalized coordinates (-1 to 1), convert to screen pixels
@@ -273,8 +286,8 @@
         let hasEnteredCore = false; // Track if user has ever entered the core
         let wasInsideCore = false;
 
-        // Track mouse movement across entire expanded container
-        const handleExpandedMouseMove = (e) => {
+        // Track mouse movement on the DOCUMENT level (since hero section is above canvas)
+        const handleDocumentMouseMove = (e) => {
             const sunCenter = getSunCenter();
             const dx = e.clientX - sunCenter.x;
             const dy = e.clientY - sunCenter.y;
@@ -287,19 +300,16 @@
                 hasEnteredCore = true;
             }
 
-            // Only collapse after user has entered the core at least once, then left
-            if (hasEnteredCore && wasInsideCore && !isInsideCore) {
+            // Collapse if user has entered core once, then moved far enough away
+            if (hasEnteredCore && distance > coreRadius * 1.5) {
                 collapseExpanded();
             }
-            wasInsideCore = isInsideCore;
         };
 
-        expandedContainer.addEventListener('pointermove', handleExpandedMouseMove);
+        document.addEventListener('pointermove', handleDocumentMouseMove);
 
-        // Also collapse if mouse leaves the entire expanded container
-        expandedContainer.addEventListener('pointerleave', () => {
-            collapseExpanded();
-        });
+        // Store handler reference for cleanup
+        expandedContainer._docMoveHandler = handleDocumentMouseMove;
 
         // Keep hero section visible - it's on top of the canvas now
 
@@ -309,6 +319,13 @@
         console.log('[SolarForge] Expanded container created');
 
         resize();
+
+        // Set sun position immediately AFTER resize to use correct aspect ratio
+        const fov = camera.fov * Math.PI / 180;
+        const height = 2 * Math.tan(fov / 2) * camera.position.z;
+        const width = height * camera.aspect;
+        solarGroup.position.x = sunScreenPos.x * width / 2;
+        solarGroup.position.y = sunScreenPos.y * height / 2;
     };
 
     // Expand when hovering the sun
@@ -329,13 +346,23 @@
 
         // Unlock body scroll
         document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
 
         // Move canvas back to original container
         container.appendChild(canvas);
 
-        // Remove expanded container
-        if (expandedContainer && expandedContainer.parentNode) {
-            expandedContainer.parentNode.removeChild(expandedContainer);
+        // Remove expanded container and cleanup listeners
+        if (expandedContainer) {
+            if (expandedContainer._docMoveHandler) {
+                document.removeEventListener('pointermove', expandedContainer._docMoveHandler);
+            }
+            if (expandedContainer._preventScroll) {
+                window.removeEventListener('wheel', expandedContainer._preventScroll);
+                window.removeEventListener('touchmove', expandedContainer._preventScroll);
+            }
+            if (expandedContainer.parentNode) {
+                expandedContainer.parentNode.removeChild(expandedContainer);
+            }
             expandedContainer = null;
         }
 
