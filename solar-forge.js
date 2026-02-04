@@ -197,93 +197,124 @@
         console.log('[SolarForge] Sun position calculated:', sunScreenPos);
     };
 
-    container.addEventListener('pointerenter', () => {
-        console.log('[SolarForge] pointerenter - isExpanded:', isExpanded);
+    // Function to expand to fullscreen view
+    const expandToFullscreen = () => {
+        if (isExpanded) return;
+
+        console.log('[SolarForge] Expanding to fullscreen view');
+        isExpanded = true;
         hoverTarget = 1;
-        if (!isExpanded) {
-            isExpanded = true;
-            calculateSunOffset();
+        calculateSunOffset();
 
-            // Create fullscreen container that holds BOTH canvas and hero content
-            expandedContainer = document.createElement('div');
-            expandedContainer.id = 'solar-expanded';
-            expandedContainer.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100vw;
-                height: 100vh;
-                z-index: 9999;
-                background: #0a0808;
-                overflow: hidden;
-            `;
+        // Create fullscreen container that holds BOTH canvas and hero content
+        expandedContainer = document.createElement('div');
+        expandedContainer.id = 'solar-expanded';
+        expandedContainer.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            background: #0a0808;
+            overflow: hidden;
+        `;
 
-            // Move canvas into expanded container
-            expandedContainer.appendChild(canvas);
-            canvas.style.position = 'absolute';
-            canvas.style.top = '0';
-            canvas.style.left = '0';
-            canvas.style.width = '100%';
-            canvas.style.height = '100%';
-            canvas.style.zIndex = '1';
-            canvas.style.borderRadius = '0';
+        // Move canvas into expanded container
+        expandedContainer.appendChild(canvas);
+        canvas.style.position = 'absolute';
+        canvas.style.top = '0';
+        canvas.style.left = '0';
+        canvas.style.width = '100%';
+        canvas.style.height = '100%';
+        canvas.style.zIndex = '1';
+        canvas.style.borderRadius = '0';
 
-            // Clone hero content into expanded container (positioned over canvas)
-            if (heroContent) {
-                const heroClone = heroContent.cloneNode(true);
-                heroClone.style.cssText = `
-                    position: absolute;
-                    top: 50%;
-                    left: 50px;
-                    transform: translateY(-50%);
-                    z-index: 10;
-                    max-width: 600px;
-                `;
-                expandedContainer.appendChild(heroClone);
-            }
-
-            // Add exit circle button
-            const exitCircle = document.createElement('div');
-            exitCircle.style.cssText = `
+        // Clone hero content into expanded container (centered middle-left)
+        if (heroContent) {
+            const heroWrapper = document.createElement('div');
+            heroWrapper.style.cssText = `
                 position: absolute;
-                top: 20px;
-                right: 20px;
-                width: 50px;
-                height: 50px;
-                border-radius: 50%;
-                background: rgba(255, 159, 67, 0.2);
-                border: 2px solid rgba(255, 159, 67, 0.5);
-                cursor: pointer;
-                z-index: 100;
+                top: 0;
+                left: 200px;
+                height: 100%;
                 display: flex;
                 align-items: center;
-                justify-content: center;
-                font-size: 24px;
-                color: #ff9f43;
-                transition: all 0.3s ease;
+                z-index: 10;
             `;
-            exitCircle.innerHTML = '×';
-            exitCircle.addEventListener('click', () => {
-                hoverTarget = 0;
+            const heroClone = heroContent.cloneNode(true);
+            heroClone.style.maxWidth = '600px';
+            heroWrapper.appendChild(heroClone);
+            expandedContainer.appendChild(heroWrapper);
+        }
+
+        // Add expanded container to body
+        document.body.appendChild(expandedContainer);
+
+        // Calculate the sun's center position on screen using the actual rendered position
+        // sunScreenPos is in normalized coordinates (-1 to 1), convert to screen pixels
+        const getSunCenter = () => {
+            // Convert from normalized (-1 to 1) to screen coordinates
+            const sunX = (sunScreenPos.x + 1) / 2 * window.innerWidth;
+            const sunY = (1 - sunScreenPos.y) / 2 * window.innerHeight; // flip Y
+            return { x: sunX, y: sunY };
+        };
+
+        // Core radius for hover detection (slightly larger than visual core)
+        const coreRadius = 250;
+        let hasEnteredCore = false; // Track if user has ever entered the core
+        let wasInsideCore = false;
+
+        // Track mouse movement across entire expanded container
+        const handleExpandedMouseMove = (e) => {
+            const sunCenter = getSunCenter();
+            const dx = e.clientX - sunCenter.x;
+            const dy = e.clientY - sunCenter.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            const isInsideCore = distance < coreRadius;
+
+            // First, track if user has entered the core at least once
+            if (isInsideCore) {
+                hasEnteredCore = true;
+            }
+
+            // Only collapse after user has entered the core at least once, then left
+            if (hasEnteredCore && wasInsideCore && !isInsideCore) {
                 collapseExpanded();
-            });
-            exitCircle.addEventListener('mouseenter', () => {
-                exitCircle.style.background = 'rgba(255, 159, 67, 0.4)';
-            });
-            exitCircle.addEventListener('mouseleave', () => {
-                exitCircle.style.background = 'rgba(255, 159, 67, 0.2)';
-            });
-            expandedContainer.appendChild(exitCircle);
+            }
+            wasInsideCore = isInsideCore;
+        };
 
-            // Add expanded container to body
-            document.body.appendChild(expandedContainer);
+        expandedContainer.addEventListener('pointermove', handleExpandedMouseMove);
 
-            // Make renderer background visible (dark)
-            renderer.setClearColor(0x0a0808, 1);
+        // Also collapse if mouse leaves the entire expanded container
+        expandedContainer.addEventListener('pointerleave', () => {
+            collapseExpanded();
+        });
 
-            console.log('[SolarForge] Expanded container created');
+        // Hide the original hero section so it doesn't show through
+        if (heroSection) {
+            heroSection.style.visibility = 'hidden';
+        }
 
-            resize();
+        // Make renderer background visible (dark)
+        renderer.setClearColor(0x0a0808, 1);
+
+        console.log('[SolarForge] Expanded container created');
+
+        resize();
+    };
+
+    // Auto-expand on page load
+    setTimeout(() => {
+        expandToFullscreen();
+    }, 100);
+
+    container.addEventListener('pointerenter', () => {
+        // Re-expand if collapsed
+        if (!isExpanded) {
+            expandToFullscreen();
         }
     });
 
@@ -314,6 +345,11 @@
         canvas.style.zIndex = '';
         canvas.style.pointerEvents = '';
         canvas.style.borderRadius = '50%';
+
+        // Restore hero section visibility
+        if (heroSection) {
+            heroSection.style.visibility = '';
+        }
 
         // Restore transparent renderer
         renderer.setClearColor(0x000000, 0);
