@@ -230,22 +230,35 @@
         canvas.style.zIndex = '1';
         canvas.style.borderRadius = '0';
 
-        // Clone hero content into expanded container (centered middle-left)
+        // Clone hero content into expanded container (positioned like original)
         if (heroContent) {
             const heroWrapper = document.createElement('div');
+            heroWrapper.id = 'expanded-hero-wrapper';
             heroWrapper.style.cssText = `
                 position: absolute;
-                top: 0;
-                left: 200px;
-                height: 100%;
-                display: flex;
-                align-items: center;
+                top: 53.75%;
+                left: 21.1%;
+                transform: translateY(-50%);
                 z-index: 10;
+                pointer-events: auto;
             `;
             const heroClone = heroContent.cloneNode(true);
             heroClone.style.maxWidth = '600px';
             heroWrapper.appendChild(heroClone);
             expandedContainer.appendChild(heroWrapper);
+
+            // Add style to disable ALL transitions on cloned content
+            const noTransitionStyle = document.createElement('style');
+            noTransitionStyle.textContent = `
+                #expanded-hero-wrapper,
+                #expanded-hero-wrapper * {
+                    transition: none !important;
+                    animation: none !important;
+                    opacity: 1 !important;
+                    visibility: visible !important;
+                }
+            `;
+            expandedContainer.appendChild(noTransitionStyle);
         }
 
         // Add expanded container to body
@@ -306,13 +319,8 @@
         resize();
     };
 
-    // Auto-expand on page load
-    setTimeout(() => {
-        expandToFullscreen();
-    }, 100);
-
+    // Expand when hovering the sun
     container.addEventListener('pointerenter', () => {
-        // Re-expand if collapsed
         if (!isExpanded) {
             expandToFullscreen();
         }
