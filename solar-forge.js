@@ -300,8 +300,8 @@
                 hasEnteredCore = true;
             }
 
-            // Collapse if user has entered core once, then moved far enough away
-            if (hasEnteredCore && distance > coreRadius * 1.5) {
+            // Collapse if user has entered core once, then moved away
+            if (hasEnteredCore && distance > coreRadius) {
                 collapseExpanded();
             }
         };
@@ -344,9 +344,7 @@
         pointerTarget.x = 0;
         pointerTarget.y = 0;
 
-        // Unlock body scroll
-        document.body.style.overflow = '';
-        document.documentElement.style.overflow = '';
+
 
         // Move canvas back to original container
         container.appendChild(canvas);
@@ -356,9 +354,8 @@
             if (expandedContainer._docMoveHandler) {
                 document.removeEventListener('pointermove', expandedContainer._docMoveHandler);
             }
-            if (expandedContainer._preventScroll) {
-                window.removeEventListener('wheel', expandedContainer._preventScroll);
-                window.removeEventListener('touchmove', expandedContainer._preventScroll);
+            if (expandedContainer._scrollHandler) {
+                window.removeEventListener('scroll', expandedContainer._scrollHandler);
             }
             if (expandedContainer.parentNode) {
                 expandedContainer.parentNode.removeChild(expandedContainer);
