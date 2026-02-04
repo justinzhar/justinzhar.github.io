@@ -191,7 +191,7 @@
 
     const calculateSunOffset = () => {
         const rect = container.getBoundingClientRect();
-        // Sun center relative to viewport (normalized -1 to 1)
+        // Sun center relative to viewport - captures exactly where sun is on screen
         sunScreenPos.x = ((rect.left + rect.width / 2) / window.innerWidth) * 2 - 1;
         sunScreenPos.y = -((rect.top + rect.height / 2) / window.innerHeight) * 2 + 1;
         console.log('[SolarForge] Sun position calculated:', sunScreenPos);
@@ -205,6 +205,9 @@
         isExpanded = true;
         hoverTarget = 1;
         calculateSunOffset();
+
+        // Lock body scroll while expanded
+        document.body.style.overflow = 'hidden';
 
         // Create fullscreen container that holds BOTH canvas and hero content
         expandedContainer = document.createElement('div');
@@ -230,36 +233,45 @@
         canvas.style.zIndex = '1';
         canvas.style.borderRadius = '0';
 
-        // Clone hero content into expanded container (positioned like original)
+        // Clone hero content - positioned relative to sun
         if (heroContent) {
+            // Calculate hero position based on sun's screen position
+            // Sun is at sunScreenPos (normalized -1 to 1), hero goes to the left of it
+            const sunScreenX = (sunScreenPos.x + 1) / 2 * 100; // Convert to percentage
+            const sunScreenY = (1 - sunScreenPos.y) / 2 * 100; // Convert to percentage (flip Y)
+
+            // Position hero to the left of the sun
+            const heroLeft = Math.max(5, sunScreenX - 45); // 45% to the left of sun, min 5%
+            const heroTop = sunScreenY; // Same vertical position as sun
+
             const heroWrapper = document.createElement('div');
             heroWrapper.id = 'expanded-hero-wrapper';
             heroWrapper.style.cssText = `
                 position: absolute;
-                top: 53.75%;
-                left: 21.1%;
+                top: ${heroTop}%;
+                left: ${heroLeft}%;
                 transform: translateY(-50%);
                 z-index: 10;
                 pointer-events: auto;
+                max-width: 500px;
             `;
             const heroClone = heroContent.cloneNode(true);
-            heroClone.style.maxWidth = '600px';
             heroWrapper.appendChild(heroClone);
             expandedContainer.appendChild(heroWrapper);
-
-            // Add style to disable ALL transitions on cloned content
-            const noTransitionStyle = document.createElement('style');
-            noTransitionStyle.textContent = `
-                #expanded-hero-wrapper,
-                #expanded-hero-wrapper * {
-                    transition: none !important;
-                    animation: none !important;
-                    opacity: 1 !important;
-                    visibility: visible !important;
-                }
-            `;
-            expandedContainer.appendChild(noTransitionStyle);
         }
+
+        // Add style to disable ALL transitions
+        const noTransitionStyle = document.createElement('style');
+        noTransitionStyle.textContent = `
+            #expanded-hero-wrapper,
+            #expanded-hero-wrapper * {
+                transition: none !important;
+                animation: none !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+            }
+        `;
+        expandedContainer.appendChild(noTransitionStyle);
 
         // Add expanded container to body
         document.body.appendChild(expandedContainer);
@@ -334,6 +346,9 @@
         hoverTarget = 0;
         pointerTarget.x = 0;
         pointerTarget.y = 0;
+
+        // Unlock body scroll
+        document.body.style.overflow = '';
 
         // Move canvas back to original container
         container.appendChild(canvas);
