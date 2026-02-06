@@ -1031,11 +1031,7 @@ html.no-webgl .fallback-sun {
 }
 
 .project-card:hover {
-    transform: translateY(-10px) rotateX(5deg);
     border-color: var(--accent-primary);
-    box-shadow:
-        0 25px 50px rgba(0, 0, 0, 0.5),
-        0 0 30px rgba(0, 245, 212, 0.1);
 }
 
 .card-glow {
@@ -1064,9 +1060,7 @@ html.no-webgl .fallback-sun {
     transition: height 0.4s ease;
 }
 
-.project-card:hover .project-image {
-    height: 400px;
-}
+
 
 .project-placeholder {
     width: 100%;
