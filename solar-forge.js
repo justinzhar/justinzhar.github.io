@@ -50,7 +50,7 @@
 
     const scene = new THREE.Scene();
 
-    const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+    const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 2000);
     camera.position.set(0, 0, 4.6);
 
     const ambient = new THREE.AmbientLight(0xffc89a, 0.35);
@@ -80,7 +80,8 @@
         emissiveIntensity: 0.7,
         transparent: true,
         opacity: 0.45,
-        blending: THREE.AdditiveBlending
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
     });
 
     const bloom = new THREE.Mesh(new THREE.SphereGeometry(1.02, 32, 32), bloomMaterial);
@@ -97,7 +98,8 @@
         color: 0xffb061,
         transparent: true,
         blending: THREE.AdditiveBlending,
-        depthWrite: false
+        depthWrite: false,
+        depthTest: false
     }));
     corona.scale.set(4.5, 4.5, 1);
     solarGroup.add(corona);
@@ -110,7 +112,8 @@
         transparent: true,
         opacity: 0.35,
         blending: THREE.AdditiveBlending,
-        depthWrite: false
+        depthWrite: false,
+        depthTest: false
     });
 
     for (let i = 0; i < 3; i += 1) {
@@ -133,7 +136,8 @@
         transparent: true,
         opacity: 0.45,
         blending: THREE.AdditiveBlending,
-        depthWrite: false
+        depthWrite: false,
+        depthTest: false
     });
 
     const ringTilts = [
@@ -180,6 +184,7 @@
     container.addEventListener('pointermove', updatePointer);
 
     let isExpanded = false;
+    let isPendingExpand = false; // Pre-expand phase flag
 
     // Store the sun's original screen position for offset calculation
     let sunScreenPos = { x: 0, y: 0 };
@@ -252,25 +257,8 @@
             heroSection.style.background = 'transparent';
         }
 
-        // Add a dark background layer behind everything with fade-in
-        const bgLayer = document.createElement('div');
-        bgLayer.id = 'solar-bg-layer';
-        bgLayer.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: #0a0808;
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 0.5s ease-out;
-        `;
-        document.body.insertBefore(bgLayer, document.body.firstChild);
-        // Trigger fade-in after a frame
-        requestAnimationFrame(() => {
-            bgLayer.style.opacity = '1';
-        });
+        // Background layer is already created and fading in from pre-expand phase
+        // Just ensure it's at full opacity now
 
         // Calculate the sun's center position on screen using the actual rendered position
         // sunScreenPos is in normalized coordinates (-1 to 1), convert to screen pixels
@@ -313,8 +301,7 @@
 
         // Keep hero section visible - it's on top of the canvas now
 
-        // Make renderer background visible (dark)
-        renderer.setClearColor(0x0a0808, 1);
+        // Keep renderer transparent - CSS background layer handles the dark background with fade
 
         console.log('[SolarForge] Expanded container created');
 
@@ -328,10 +315,45 @@
         solarGroup.position.y = sunScreenPos.y * height / 2;
     };
 
-    // Expand when hovering the sun
+    // Expand when hovering the sun - start pre-expand phase with visible CSS growth
     container.addEventListener('pointerenter', () => {
-        if (!isExpanded) {
-            expandToFullscreen();
+        if (!isExpanded && !isPendingExpand) {
+            isPendingExpand = true;
+            hoverTarget = 1; // Start the 3D animation
+
+            // Allow the sun to grow beyond container bounds
+            container.style.overflow = 'visible';
+            container.style.zIndex = '1000';
+
+            // CSS scale the canvas for visible pre-expand growth
+            canvas.style.transition = 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+            canvas.style.transform = 'scale(2.5)';
+
+            // Create and fade in background layer
+            let bgLayer = document.getElementById('solar-bg-layer');
+            if (!bgLayer) {
+                bgLayer = document.createElement('div');
+                bgLayer.id = 'solar-bg-layer';
+                bgLayer.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    background: #0a0808;
+                    z-index: -1;
+                    opacity: 0;
+                    transition: opacity 2.5s ease-out;
+                    pointer-events: none;
+                `;
+                document.body.insertBefore(bgLayer, document.body.firstChild);
+            }
+            // Trigger fade-in after a frame
+            requestAnimationFrame(() => {
+                bgLayer.style.opacity = '1';
+            });
+
+            console.log('[SolarForge] Pre-expand phase started - CSS growth visible');
         }
     });
 
@@ -344,9 +366,14 @@
         pointerTarget.x = 0;
         pointerTarget.y = 0;
 
+        // Start smooth fade-out of background
+        const bgLayer = document.getElementById('solar-bg-layer');
+        if (bgLayer) {
+            bgLayer.style.transition = 'opacity 0.8s ease-out';
+            bgLayer.style.opacity = '0';
+        }
 
-
-        // Move canvas back to original container
+        // Move canvas back to original container immediately
         container.appendChild(canvas);
 
         // Remove expanded container and cleanup listeners
@@ -363,13 +390,7 @@
             expandedContainer = null;
         }
 
-        // Remove background layer
-        const bgLayer = document.getElementById('solar-bg-layer');
-        if (bgLayer && bgLayer.parentNode) {
-            bgLayer.parentNode.removeChild(bgLayer);
-        }
-
-        // Restore canvas styles
+        // Restore canvas styles immediately
         canvas.style.position = '';
         canvas.style.top = '';
         canvas.style.left = '';
@@ -378,6 +399,10 @@
         canvas.style.zIndex = '';
         canvas.style.pointerEvents = '';
         canvas.style.borderRadius = '50%';
+
+        // Restore container styles
+        container.style.overflow = '';
+        container.style.zIndex = '';
 
         // Restore hero section visibility and styles
         if (heroSection) {
@@ -392,6 +417,13 @@
 
         resize();
         console.log('[SolarForge] Collapsed - canvas restored to container');
+
+        // Remove background layer after fade completes
+        setTimeout(() => {
+            if (bgLayer && bgLayer.parentNode) {
+                bgLayer.parentNode.removeChild(bgLayer);
+            }
+        }, 800);
     };
 
     container.addEventListener('pointerleave', () => {
@@ -427,7 +459,18 @@
 
         pointer.x += (pointerTarget.x - pointer.x) * 0.08;
         pointer.y += (pointerTarget.y - pointer.y) * 0.08;
-        hover += (hoverTarget - hover) * 0.08;
+        hover += (hoverTarget - hover) * 0.02; // Slowed down for visible growth animation
+
+        // Threshold-based fullscreen: reset CSS transform first, then go fullscreen
+        if (isPendingExpand && hover > 0.6) {
+            isPendingExpand = false;
+            // Reset CSS transform BEFORE going fullscreen to prevent position issues
+            canvas.style.transition = '';
+            canvas.style.transform = '';
+            expandToFullscreen();
+        }
+
+
 
         solarGroup.rotation.y += delta * (0.25 + hover * 0.3);
         solarGroup.rotation.x += (pointer.y * 0.4 - solarGroup.rotation.x) * 0.06;
@@ -442,20 +485,27 @@
             ribbon.rotation.x += ribbon.userData.spin * 0.5 * delta;
         });
 
-        // Camera positioning
-        camera.position.z = 4.6 + hover * 2.0;
+        // Camera positioning - Deep space retreat to prevent ring clipping
+        // We move the camera back significantly (Z=1000) when expanded
+        // This prevents the massive rings from passing behind the camera plane
+        camera.position.z = 4.6 + hover * 995.4;
         camera.updateProjectionMatrix();
 
-        // RINGS expand massively to fill viewport from sun's offset position
-        // Need 50x scale since sun is on right side of screen
-        const ringScale = 1 + hover * 50;
+        // Sun & Content Scaling - Balanced for a "usual" visual footprint
+        // 170x scale keeps the core centered and professional without being massive
+        const compensatesScale = 1 + hover * 169;
+        solarGroup.scale.setScalar(compensatesScale);
+
+        // RINGS expand massively to fill viewport
+        // 40x scale ensures they still feel tuff and expansive around the re-balanced core
+        const ringScale = 1 + hover * 39;
         ringGroup.scale.setScalar(ringScale);
 
         // Debug log every second
         if (Math.floor(elapsed) !== Math.floor(elapsed - delta) && hover > 0.1) {
             console.log('[SolarForge] Animate:', {
                 hover: hover.toFixed(2),
-                ringScale: ringScale.toFixed(2),
+                solarScale: compensatesScale.toFixed(2),
                 isExpanded,
                 cameraZ: camera.position.z.toFixed(2)
             });
@@ -482,7 +532,7 @@
             const targetY = worldY;
             solarGroup.position.x += (targetX - solarGroup.position.x) * 0.1;
             solarGroup.position.y += (targetY - solarGroup.position.y) * 0.1;
-        } else {
+        } else if (!isExpanded) {
             // Return to center when not expanded
             solarGroup.position.x += (0 - solarGroup.position.x) * 0.1;
             solarGroup.position.y += (0 - solarGroup.position.y) * 0.1;
@@ -660,7 +710,7 @@
         const positions = new Float32Array(count * 3);
 
         for (let i = 0; i < count; i += 1) {
-            const distance = 6 + Math.random() * 8;
+            const distance = 2000 + Math.random() * 2000;
             const theta = Math.random() * Math.PI * 2;
             const phi = Math.acos(2 * Math.random() - 1);
             const position = toCartesian(distance, theta, phi);
