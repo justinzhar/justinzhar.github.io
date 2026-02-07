@@ -613,7 +613,7 @@
         const targetCoreDiameterPx = THREE.MathUtils.clamp(
             stageBaseSize * 1.12,
             360,
-            viewportMin * 0.58
+            viewportMin * 0.45
         );
         const targetCoreRadiusPx = targetCoreDiameterPx * 0.5;
         const focalLengthPx = (viewportHeight * 0.5) / Math.tan(fov * 0.5);
