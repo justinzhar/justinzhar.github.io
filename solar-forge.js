@@ -576,7 +576,9 @@
 
         pointer.x += (pointerTarget.x - pointer.x) * 0.08;
         pointer.y += (pointerTarget.y - pointer.y) * 0.08;
-        hover += (hoverTarget - hover) * 0.02; // Slowed down for visible growth animation
+        const hoverLerp = 1 - Math.exp(-4.2 * delta);
+        hover += (hoverTarget - hover) * hoverLerp;
+        const easedHover = hover * hover * (3 - 2 * hover);
 
         // Enter fullscreen once the hover transition has ramped up.
         if (isPendingExpand && hover > 0.6) {
@@ -602,7 +604,7 @@
         // Camera positioning - Deep space retreat to prevent ring clipping
         // We move the camera back significantly (Z=1000) when expanded
         // This prevents the massive rings from passing behind the camera plane
-        camera.position.z = 4.6 + hover * 995.4;
+        camera.position.z = 4.6 + easedHover * 995.4;
 
         // Keep expanded core at a consistent on-screen diameter across OS/browser/viewport setups.
         const fov = camera.fov * Math.PI / 180;
@@ -620,22 +622,22 @@
         const coreRadiusWorld = 0.9;
         const expandedSolarScale = (targetCoreRadiusPx * camera.position.z) / (coreRadiusWorld * focalLengthPx);
         const stableExpandedScale = Math.max(expandedSolarScale, 170);
-        const compensatesScale = THREE.MathUtils.lerp(1, stableExpandedScale, hover);
+        const compensatesScale = THREE.MathUtils.lerp(1, stableExpandedScale, easedHover);
         solarGroup.scale.setScalar(compensatesScale);
 
         // RINGS expand massively to fill viewport
         // 40x scale ensures they still feel tuff and expansive around the re-balanced core
-        const ringScale = 1 + hover * 39;
+        const ringScale = 1 + easedHover * 39;
         ringGroup.scale.setScalar(ringScale);
 
         // Everything else stays mostly the same size
-        belt.scale.setScalar(1 + hover * 0.2);
-        core.scale.setScalar(1 + hover * 0.03);
-        ribbonGroup.scale.setScalar(1 + hover * 0.08);
+        belt.scale.setScalar(1 + easedHover * 0.2);
+        core.scale.setScalar(1 + easedHover * 0.03);
+        ribbonGroup.scale.setScalar(1 + easedHover * 0.08);
 
         // Position the sun at its original screen location when expanded
         // This keeps the sun visually in place while rings extend across viewport
-        if (isExpanded && hover > 0.01) {
+        if (isExpanded && easedHover > 0.01) {
             // Convert screen position to world coordinates
             const fov = camera.fov * Math.PI / 180;
             const height = 2 * Math.tan(fov / 2) * camera.position.z;
