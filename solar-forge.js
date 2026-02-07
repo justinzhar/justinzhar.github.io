@@ -185,6 +185,7 @@
 
     let isExpanded = false;
     let isPendingExpand = false; // Pre-expand phase flag
+    let isCollapsing = false; // Prevent new expansions during collapse animation
 
     // Store the sun's original screen position for offset calculation
     let sunScreenPos = { x: 0, y: 0 };
@@ -269,35 +270,39 @@
             return { x: sunX, y: sunY };
         };
 
-        // Core radius for hover detection (slightly larger than visual core)
+        // Core radius for hover detection - tight circle over the core
         const coreRadius = 250;
-        let hasEnteredCore = false; // Track if user has ever entered the core
-        let wasInsideCore = false;
+        let hasEnteredCore = true; // User is already near sun since they triggered expansion
 
-        // Track mouse movement on the DOCUMENT level (since hero section is above canvas)
+        // Track mouse movement on the DOCUMENT level
         const handleDocumentMouseMove = (e) => {
+            if (!isExpanded) return; // Prevent repeated calls
+
             const sunCenter = getSunCenter();
             const dx = e.clientX - sunCenter.x;
             const dy = e.clientY - sunCenter.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
 
-            const isInsideCore = distance < coreRadius;
-
-            // First, track if user has entered the core at least once
-            if (isInsideCore) {
-                hasEnteredCore = true;
+            // Collapse if user moves away from sun core
+            if (distance > coreRadius) {
+                collapseExpanded();
             }
+        };
 
-            // Collapse if user has entered core once, then moved away
-            if (hasEnteredCore && distance > coreRadius) {
+        // Escape key to collapse
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                console.log('[SolarForge] Escape pressed, collapsing');
                 collapseExpanded();
             }
         };
 
         document.addEventListener('pointermove', handleDocumentMouseMove);
+        document.addEventListener('keydown', handleKeyDown);
 
-        // Store handler reference for cleanup
+        // Store handler references for cleanup
         expandedContainer._docMoveHandler = handleDocumentMouseMove;
+        expandedContainer._keyHandler = handleKeyDown;
 
         // Keep hero section visible - it's on top of the canvas now
 
@@ -317,7 +322,7 @@
 
     // Expand when hovering the sun - start pre-expand phase with visible CSS growth
     container.addEventListener('pointerenter', () => {
-        if (!isExpanded && !isPendingExpand) {
+        if (!isExpanded && !isPendingExpand && !isCollapsing) {
             isPendingExpand = true;
             hoverTarget = 1; // Start the 3D animation
 
@@ -357,40 +362,25 @@
         }
     });
 
-    // Function to collapse expanded view
+    // Function to collapse expanded view - immediate return with visible shrink
     const collapseExpanded = () => {
-        if (!isExpanded) return;
+        if (!isExpanded || isCollapsing) return;
 
-        isExpanded = false;
+        console.log('[SolarForge] Collapse started - immediate return');
+        isCollapsing = true;
+        isExpanded = false; // Snap 3D logic back immediately to prevent drift
         hoverTarget = 0;
         pointerTarget.x = 0;
         pointerTarget.y = 0;
 
-        // Start smooth fade-out of background
-        const bgLayer = document.getElementById('solar-bg-layer');
-        if (bgLayer) {
-            bgLayer.style.transition = 'opacity 0.8s ease-out';
-            bgLayer.style.opacity = '0';
-        }
-
         // Move canvas back to original container immediately
         container.appendChild(canvas);
 
-        // Remove expanded container and cleanup listeners
-        if (expandedContainer) {
-            if (expandedContainer._docMoveHandler) {
-                document.removeEventListener('pointermove', expandedContainer._docMoveHandler);
-            }
-            if (expandedContainer._scrollHandler) {
-                window.removeEventListener('scroll', expandedContainer._scrollHandler);
-            }
-            if (expandedContainer.parentNode) {
-                expandedContainer.parentNode.removeChild(expandedContainer);
-            }
-            expandedContainer = null;
-        }
+        // Allow sun to shrink beyond container bounds (visible)
+        container.style.overflow = 'visible';
+        container.style.zIndex = '1000';
 
-        // Restore canvas styles immediately
+        // Reset canvas styles but keep it scaled up initially for the shrink transition
         canvas.style.position = '';
         canvas.style.top = '';
         canvas.style.left = '';
@@ -399,12 +389,17 @@
         canvas.style.zIndex = '';
         canvas.style.pointerEvents = '';
         canvas.style.borderRadius = '50%';
+        canvas.style.transition = 'none'; // Instant set
+        canvas.style.transform = 'scale(2.5)';
 
-        // Restore container styles
-        container.style.overflow = '';
-        container.style.zIndex = '';
+        // Fade out background
+        const bgLayer = document.getElementById('solar-bg-layer');
+        if (bgLayer) {
+            bgLayer.style.transition = 'opacity 0.8s ease-out';
+            bgLayer.style.opacity = '0';
+        }
 
-        // Restore hero section visibility and styles
+        // Restore hero section visibility immediately 
         if (heroSection) {
             heroSection.style.visibility = '';
             heroSection.style.position = '';
@@ -412,17 +407,49 @@
             heroSection.style.background = '';
         }
 
+        // Remove event listeners
+        if (expandedContainer) {
+            if (expandedContainer._docMoveHandler) {
+                document.removeEventListener('pointermove', expandedContainer._docMoveHandler);
+            }
+            if (expandedContainer._keyHandler) {
+                document.removeEventListener('keydown', expandedContainer._keyHandler);
+            }
+            if (expandedContainer._scrollHandler) {
+                window.removeEventListener('scroll', expandedContainer._scrollHandler);
+            }
+
+            // Remove expanded container
+            if (expandedContainer.parentNode) {
+                expandedContainer.parentNode.removeChild(expandedContainer);
+            }
+            expandedContainer = null;
+        }
+
+        // Trigger the shrink animation after a frame
+        requestAnimationFrame(() => {
+            canvas.style.transition = 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+            canvas.style.transform = 'scale(1)';
+        });
+
         // Restore transparent renderer
         renderer.setClearColor(0x000000, 0);
-
+        solarGroup.position.set(0, 0, 0);
         resize();
-        console.log('[SolarForge] Collapsed - canvas restored to container');
 
-        // Remove background layer after fade completes
+        // Final cleanup after animation completes
         setTimeout(() => {
+            canvas.style.transition = '';
+            canvas.style.transform = '';
+            container.style.overflow = '';
+            container.style.zIndex = '';
+
             if (bgLayer && bgLayer.parentNode) {
                 bgLayer.parentNode.removeChild(bgLayer);
             }
+
+            isCollapsing = false;
+            console.log('[SolarForge] Collapse complete');
         }, 800);
     };
 
