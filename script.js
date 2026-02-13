@@ -573,15 +573,26 @@ function initContactForm() {
             submitBtn.querySelector('.btn-text').textContent = 'Sending...';
             submitBtn.disabled = true;
 
-            // Simulate form submission (replace with actual form handling)
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form),
+                    headers: { 'Accept': 'application/json' }
+                });
 
-            // Show success state
-            submitBtn.querySelector('.btn-text').textContent = 'Message Sent!';
-            submitBtn.style.background = 'linear-gradient(135deg, #27ca40 0%, #00f5d4 100%)';
-
-            // Reset form
-            form.reset();
+                if (response.ok) {
+                    // Show success state
+                    submitBtn.querySelector('.btn-text').textContent = 'Message Sent!';
+                    submitBtn.style.background = 'linear-gradient(135deg, #27ca40 0%, #00f5d4 100%)';
+                    form.reset();
+                } else {
+                    submitBtn.querySelector('.btn-text').textContent = 'Failed to send';
+                    submitBtn.style.background = 'linear-gradient(135deg, #ff4444 0%, #ff6b6b 100%)';
+                }
+            } catch (error) {
+                submitBtn.querySelector('.btn-text').textContent = 'Failed to send';
+                submitBtn.style.background = 'linear-gradient(135deg, #ff4444 0%, #ff6b6b 100%)';
+            }
 
             // Reset button after delay
             setTimeout(() => {

@@ -656,6 +656,28 @@ html.no-webgl .fallback-sun {
     display: block;
 }
 
+.solar-loader {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.solar-loader-spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid rgba(255, 159, 67, 0.2);
+    border-top-color: var(--accent-primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
 .sphere-ring {
     position: absolute;
     top: 50%;
@@ -1225,6 +1247,35 @@ html.no-webgl .fallback-sun {
     color: var(--accent-primary);
 }
 
+.project-links {
+    display: flex;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.project-link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border: 1px solid var(--accent-primary);
+    border-radius: 20px;
+    color: var(--accent-primary);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: var(--transition-fast);
+}
+
+.project-link-btn:hover {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+}
+
+.project-link-btn svg {
+    flex-shrink: 0;
+}
+
 /* ============================================
    SKILLS SECTION
    ============================================ */
@@ -1294,6 +1345,18 @@ html.no-webgl .fallback-sun {
 
 .skill-icon {
     font-size: 1.3rem;
+}
+
+.skill-icon-svg {
+    width: 22px;
+    height: 22px;
+}
+
+.skill-icon-img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.3));
 }
 
 .skill-name {
