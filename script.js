@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initSkillBars();
     initCountUp();
     initContactForm();
+    initDecryptedText();
 });
 
 // ============================================
@@ -98,6 +99,61 @@ function initTypingAnimation() {
     }
 
     setTimeout(type, 1000);
+}
+
+// ============================================
+// DECRYPTED TEXT EFFECT
+// ============================================
+function initDecryptedText() {
+    const nameElement = document.querySelector('.name');
+    if (!nameElement) return;
+
+    const originalText = nameElement.textContent;
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+';
+    const speed = 50;
+    const maxIterations = 10;
+
+    let isAnimating = false;
+
+    function decrypt(element, text) {
+        if (isAnimating) return;
+        isAnimating = true;
+
+        let iterations = 0;
+        const interval = setInterval(() => {
+            element.innerHTML = text
+                .split('')
+                .map((char, index) => {
+                    if (index < iterations) {
+                        return `<span class="revealed">${text[index]}</span>`;
+                    }
+                    if (text[index] === ' ') return ' ';
+                    const randomChar = characters[Math.floor(Math.random() * characters.length)];
+                    return `<span class="encrypted">${randomChar}</span>`;
+                })
+                .join('');
+
+            if (iterations >= text.length) {
+                clearInterval(interval);
+                isAnimating = false;
+                element.textContent = text; // Final cleanup
+            }
+
+            iterations += 0.35; // Adjusted for better speed "feel"
+        }, speed);
+    }
+
+    // Trigger on view (one-shot)
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                decrypt(nameElement, originalText);
+                observer.unobserve(nameElement);
+            }
+        });
+    }, { threshold: 0.5 });
+
+    observer.observe(nameElement);
 }
 
 // ============================================
