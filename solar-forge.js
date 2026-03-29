@@ -29,15 +29,20 @@
     }
 
     const isCompact = window.innerWidth < 768;
-    const particleCount = prefersReduced ? 200 : (isCompact ? 350 : 650);
-    const shardCount = prefersReduced ? 40 : (isCompact ? 70 : 120);
-    const starCount = prefersReduced ? 200 : (isCompact ? 400 : 900);
+    const isHighDensity = window.devicePixelRatio > 1.6;
+    const detailScale = isHighDensity ? 0.72 : 1;
+    const particleCount = prefersReduced ? 200 : Math.floor((isCompact ? 350 : 650) * detailScale);
+    const shardCount = prefersReduced ? 40 : Math.floor((isCompact ? 70 : 120) * detailScale);
+    const starCount = prefersReduced ? 200 : Math.floor((isCompact ? 400 : 900) * (isHighDensity ? 0.62 : 1));
+    const knotTubularSegments = Math.max(96, Math.floor(200 * detailScale));
+    const knotRadialSegments = Math.max(10, Math.floor(16 * detailScale));
+    const ringTubularSegments = Math.max(84, Math.floor(140 * detailScale));
 
     const container = canvas.parentElement;
 
     const renderer = new THREE.WebGLRenderer({
         canvas,
-        antialias: true,
+        antialias: !isHighDensity,
         alpha: true,
         powerPreference: 'high-performance'
     });
@@ -119,7 +124,14 @@
 
     for (let i = 0; i < 3; i += 1) {
         const ribbon = new THREE.Mesh(
-            new THREE.TorusKnotGeometry(1.8 + i * 0.25, 0.055 + i * 0.01, 200, 16, 2 + i, 3),
+            new THREE.TorusKnotGeometry(
+                1.8 + i * 0.25,
+                0.055 + i * 0.01,
+                knotTubularSegments,
+                knotRadialSegments,
+                2 + i,
+                3
+            ),
             ribbonMaterial.clone()
         );
         ribbon.rotation.set(Math.random() * Math.PI * 0.3, Math.random() * Math.PI, Math.random() * Math.PI * 0.3);
@@ -149,7 +161,7 @@
 
     for (let i = 0; i < 3; i += 1) {
         const ring = new THREE.Mesh(
-            new THREE.TorusGeometry(1.9 + i * 0.25, 0.02 + i * 0.01, 16, 140),
+            new THREE.TorusGeometry(1.9 + i * 0.25, 0.02 + i * 0.01, knotRadialSegments, ringTubularSegments),
             ringMaterial.clone()
         );
         const tilt = ringTilts[i];
@@ -282,8 +294,8 @@
         // Core radius bands for stable collapse detection.
         // Use viewport-based values so desktop/mobile feel consistent.
         const viewportMin = Math.min(window.innerWidth, window.innerHeight);
-        const coreEnterRadius = Math.max(90, viewportMin * 0.095);
-        const coreExitRadius = Math.max(150, viewportMin * 0.16);
+        const coreEnterRadius = Math.max(120, viewportMin * 0.13);
+        const coreExitRadius = Math.max(198, viewportMin * 0.225);
         let hasEnteredCore = false;
         const collapseArmTime = performance.now() + 360;
 
@@ -305,7 +317,7 @@
 
             if (hasEnteredCore && distance > coreExitRadius) {
                 collapseExpanded();
-            } else if (!hasEnteredCore && distance > coreExitRadius * 1.35) {
+            } else if (!hasEnteredCore && distance > coreExitRadius * 1.3) {
                 collapseExpanded();
             }
         };
@@ -576,7 +588,9 @@
 
         pointer.x += (pointerTarget.x - pointer.x) * 0.08;
         pointer.y += (pointerTarget.y - pointer.y) * 0.08;
-        hover += (hoverTarget - hover) * 0.02; // Slowed down for visible growth animation
+        const hoverLerp = 1 - Math.exp(-4.2 * delta);
+        hover += (hoverTarget - hover) * hoverLerp;
+        const easedHover = hover * hover * (3 - 2 * hover);
 
         // Enter fullscreen once the hover transition has ramped up.
         if (isPendingExpand && hover > 0.6) {
@@ -602,7 +616,7 @@
         // Camera positioning - Deep space retreat to prevent ring clipping
         // We move the camera back significantly (Z=1000) when expanded
         // This prevents the massive rings from passing behind the camera plane
-        camera.position.z = 4.6 + hover * 995.4;
+        camera.position.z = 4.6 + easedHover * 995.4;
 
         // Keep expanded core at a consistent on-screen diameter across OS/browser/viewport setups.
         const fov = camera.fov * Math.PI / 180;
@@ -620,22 +634,22 @@
         const coreRadiusWorld = 0.9;
         const expandedSolarScale = (targetCoreRadiusPx * camera.position.z) / (coreRadiusWorld * focalLengthPx);
         const stableExpandedScale = Math.max(expandedSolarScale, 170);
-        const compensatesScale = THREE.MathUtils.lerp(1, stableExpandedScale, hover);
+        const compensatesScale = THREE.MathUtils.lerp(1, stableExpandedScale, easedHover);
         solarGroup.scale.setScalar(compensatesScale);
 
         // RINGS expand massively to fill viewport
         // 40x scale ensures they still feel tuff and expansive around the re-balanced core
-        const ringScale = 1 + hover * 39;
+        const ringScale = 1 + easedHover * 39;
         ringGroup.scale.setScalar(ringScale);
 
         // Everything else stays mostly the same size
-        belt.scale.setScalar(1 + hover * 0.2);
-        core.scale.setScalar(1 + hover * 0.03);
-        ribbonGroup.scale.setScalar(1 + hover * 0.08);
+        belt.scale.setScalar(1 + easedHover * 0.2);
+        core.scale.setScalar(1 + easedHover * 0.03);
+        ribbonGroup.scale.setScalar(1 + easedHover * 0.08);
 
         // Position the sun at its original screen location when expanded
         // This keeps the sun visually in place while rings extend across viewport
-        if (isExpanded && hover > 0.01) {
+        if (isExpanded && easedHover > 0.01) {
             // Convert screen position to world coordinates
             const fov = camera.fov * Math.PI / 180;
             const height = 2 * Math.tan(fov / 2) * camera.position.z;
